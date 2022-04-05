@@ -35,6 +35,7 @@ dependencies = [
  "rusqlite",
  "serde_json",
  "sha2",
+ "simple_config_parser",
 ]
 
 [[package]]
@@ -317,6 +318,12 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
+
+[[package]]
+name = "simple_config_parser"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d562b7cb7cef3d30257e59582674255342665ced8462ad861412e074c653b11"
 
 [[package]]
 name = "smallvec"

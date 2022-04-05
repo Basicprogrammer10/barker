@@ -47,7 +47,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         // Valadate password
         let mut hasher = Sha256::new();
         let mut pass = password.as_bytes().to_vec();
-        pass.extend(app.salt.clone());
+        pass.extend(app.config.password_salt.clone());
         hasher.update(pass);
         let hash = format!("{:x}", hasher.finalize());
 

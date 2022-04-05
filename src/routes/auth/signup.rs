@@ -54,7 +54,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         // Hash + Salt Password
         let mut hasher = Sha256::new();
         let mut pass = password.as_bytes().to_vec();
-        pass.extend(app.salt.clone());
+        pass.extend(app.config.password_salt.clone());
         hasher.update(pass);
         let hash = hasher.finalize();
         let hash = format!("{:x}", hash);
