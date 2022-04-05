@@ -1,7 +1,5 @@
 use std::path::Path;
 
-use simple_config_parser;
-
 pub struct Config {
     pub server_host: String,
     pub server_port: u16,

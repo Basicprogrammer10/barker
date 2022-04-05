@@ -1,0 +1,26 @@
+use afire::prelude::*;
+
+use crate::{App, Arc, Server};
+
+pub fn attatch(server: &mut Server, app: Arc<App>) {
+    server.route(Method::GET, "/api/recent", move |req| {
+        let count = match req.query.get("count") {
+            Some(i) => i.parse::<usize>().unwrap(),
+            None => 25
+        };
+
+        if count > 1000 {
+            return Response::new().status(400).text(r#"{"error": "Count too high (>1000)"}"#);
+        }
+
+        // Get recent barks
+        let out = {
+            let db = app.database.lock();
+            let mut stmt = db.prepare("SELECT content, barks.date, users.id, users.username FROM barks JOIN users ON barks.author_id = users.id ORDER BY barks.date DESC LIMIT ?").unwrap();
+            stmt.query_map([count], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))).unwrap().into_iter().map(|x| x.unwrap()).map(|x: (String, u64, String, String)| format!(r#"{{"content": "{}", "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, x.0, x.1, x.2, x.3)).collect::<Vec<String>>().join(", ")
+        };
+
+        // Send response
+        Response::new().text(format!("[{}]", out)).content(Content::JSON)
+    });
+}

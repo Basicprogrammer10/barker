@@ -22,7 +22,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         .to_owned();
 
         // Delete session
-        if session != "" {
+        if !session.is_empty() {
             println!("🗑 User Logout [{}]", session);
             app.sessions.lock().retain(|x| x.session_id != *session);
         }
