@@ -10,7 +10,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         };
 
         if count > 1000 {
-            return Response::new().status(400).text(r#"{"error": "Count too high (>1000)"}"#);
+            return Response::new().status(400).text(r#"{"error": "Count too high (>1000)"}"#).content(Content::JSON);
         }
 
         // Get recent barks
