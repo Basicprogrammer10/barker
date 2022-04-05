@@ -2,8 +2,6 @@ use std::time::Instant;
 
 use rand::{distributions::Alphanumeric, Rng};
 
-const SESSION_TIMEOUT: u64 = 60 * 60;
-
 #[derive(Debug, Clone)]
 pub struct Session {
     pub created: Instant,
@@ -24,13 +22,5 @@ impl Session {
             created: Instant::now(),
             session_id,
         }
-    }
-
-    pub fn get(&self) -> Option<String> {
-        if self.created.elapsed().as_secs() > SESSION_TIMEOUT {
-            return None;
-        }
-
-        Some(self.user_id.to_owned())
     }
 }

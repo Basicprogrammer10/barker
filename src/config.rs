@@ -9,6 +9,7 @@ pub struct Config {
     pub password_salt: Vec<u8>,
     pub database_path: String,
     pub max_message_len: usize,
+    pub session_timeout: u64,
 }
 
 impl Config {
@@ -21,6 +22,7 @@ impl Config {
             password_salt: cfg.get_str("password_salt").ok()?.as_bytes().to_vec(),
             database_path: cfg.get_str("database_path").ok()?,
             max_message_len: cfg.get::<usize>("max_message_len").ok()?,
+            session_timeout: cfg.get::<u64>("session_timeout").ok()?,
         })
     }
 }
