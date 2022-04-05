@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS barks (
+  id TEXT NOT NULL,
   author_id TEXT NOT NULL,
   ip TEXT NOT NULL,
   content TEXT NOT NULL,

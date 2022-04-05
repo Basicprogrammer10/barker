@@ -1,5 +1,4 @@
 use afire::prelude::*;
-use afire::SetCookie;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 
@@ -60,12 +59,13 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Create session
         let session = Session::new(id.to_owned());
-        let ses_is = session.session_id.to_owned();
+        let ses_id = session.session_id.to_owned();
         app.sessions.lock().push(session);
+        println!("🎄 User Login [{}, {}]", username, ses_id);
 
         // Send response with cookie
         Response::new()
-            .text(format!("Logged into account with id `{}`", id))
-            .cookie(SetCookie::new("session", ses_is))
+            .text(format!(r#"{{"token": "{}", "userId": "{}"}}"#, ses_id, id))
+            .content(Content::JSON)
     });
 }

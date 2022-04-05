@@ -8,6 +8,7 @@ pub struct Config {
 
     pub password_salt: Vec<u8>,
     pub database_path: String,
+    pub max_message_len: usize,
 }
 
 impl Config {
@@ -19,6 +20,7 @@ impl Config {
             server_port: cfg.get("port").ok()?,
             password_salt: cfg.get_str("password_salt").ok()?.as_bytes().to_vec(),
             database_path: cfg.get_str("database_path").ok()?,
+            max_message_len: cfg.get::<usize>("max_message_len").ok()?,
         })
     }
 }

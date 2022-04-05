@@ -76,6 +76,6 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             )
             .unwrap();
 
-        Response::new().status(201).text(format!("Account Created with id `{}`", id))
+        Response::new().status(201).text(format!(r#"{{"id": "{}"}}"#, id)).content(Content::JSON)
     });
 }
