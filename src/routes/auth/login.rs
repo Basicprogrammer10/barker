@@ -20,7 +20,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             |row| Ok((row.get(0)?, row.get(1)?)),
         ) {
             Ok(i) => i,
-            Err(_) => return Response::new().text("Invalid username"),
+            Err(_) => return Response::new().status(400).text("Invalid username"),
         };
 
         // Valadate password
@@ -31,7 +31,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         let hash = format!("{:x}", hasher.finalize());
 
         if hash != password_hash {
-            return Response::new().text("Invalid Password");
+            return Response::new().status(400).text("Invalid Password");
         }
 
         // Remove any old sessions

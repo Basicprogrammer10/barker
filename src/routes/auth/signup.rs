@@ -25,10 +25,9 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                 |row| row.get(0),
             )
             .unwrap();
-        let fresh = fresh < 1;
 
-        if !fresh {
-            return Response::new().text("An account with that name already exists");
+        if fresh >= 1 {
+            return Response::new().status(409).text("An account with that name already exists");
         }
 
         // Hash + Salt Password
@@ -55,6 +54,6 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             )
             .unwrap();
 
-        Response::new().text(format!("Account Created with id `{}`", id))
+        Response::new().status(201).text(format!("Account Created with id `{}`", id))
     });
 }
