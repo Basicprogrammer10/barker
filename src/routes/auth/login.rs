@@ -9,9 +9,30 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
     server.route(Method::POST, "/auth/login", move |req| {
         // Get username & password from request
         let body = req.body_string().unwrap();
-        let json: Value = serde_json::from_str(&body).unwrap();
-        let username = json.get("username").unwrap().as_str().unwrap();
-        let password = json.get("password").unwrap().as_str().unwrap();
+        let json: Value = match serde_json::from_str(&body) {
+            Ok(i) => i,
+            Err(e) => {
+                return Response::new()
+                    .status(400)
+                    .text(format!("Error parsing JSON: {}", e))
+            }
+        };
+        let username = match json.get("username") {
+            Some(i) => i.as_str().unwrap(),
+            None => {
+                return Response::new()
+                    .status(400)
+                    .text("You must supply a username")
+            }
+        };
+        let password = match json.get("password") {
+            Some(i) => i.as_str().unwrap(),
+            None => {
+                return Response::new()
+                    .status(400)
+                    .text("You must supply a username")
+            }
+        };
 
         // Get from database
         let (id, password_hash): (String, String) = match app.database.lock().query_row(

@@ -14,7 +14,9 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         .to_owned();
 
         // Delete session
-        app.sessions.lock().retain(|x| x.session_id != *session);
+        if session != "" {
+            app.sessions.lock().retain(|x| x.session_id != *session);
+        }
 
         // Send response / Remove cookie
         Response::new()
