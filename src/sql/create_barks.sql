@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS barks (
   author_id TEXT NOT NULL,
   ip TEXT NOT NULL,
   content TEXT NOT NULL,
+  deleted BOOLEAN NOT NULL,
   date INTEGER NOT NULL
 )

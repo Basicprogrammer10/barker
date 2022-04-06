@@ -66,7 +66,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .collect::<String>();
 
         // Add message to database
-        app.database.lock().execute("INSERT INTO barks (id, author_id, ip, content, date) VALUES (?, ?, ?, ?, strftime('%s','now'))", params![bark_id, session.user_id, get_ip(&req), message]).unwrap();
+        app.database.lock().execute("INSERT INTO barks (id, author_id, ip, content, deleted, date) VALUES (?, ?, ?, ?, false, strftime('%s','now'))", params![bark_id, session.user_id, get_ip(&req), message]).unwrap();
 
         // Send response
         Response::new().text(format!(r#"{{"id": "{}"}}"#, bark_id))
