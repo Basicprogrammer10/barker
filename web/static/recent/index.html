@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
+    ></script>
+    <script src="/recent/index.js"></script>
+    <title>🐶 barker</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <p><span class="logo">🐶</span> <strong>barker</strong></p>
+          </a>
+        </div>
+
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/home">
+              Home
+            </a>
+
+            <a class="navbar-item" href="/recent">
+              Recent
+            </a>
+
+            <a
+              class="navbar-item"
+              href="https://github.com/Basicprogrammer10/barker"
+            >
+              Source Code
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <br />
+
+      <div
+        x-data="{loading: true, barks: []}"
+        x-init="barks = await (await fetch('/api/recent')).json();loading=false"
+      >
+        <template x-if="loading">
+          <p>Loading...</p>
+        </template>
+
+        <div class="cards">
+          <template x-for="bark in barks">
+            <div class="card">
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-left">
+                    <figure
+                      class="image is-48x48"
+                      x-html="genAvatarImage(bark.author)"
+                    ></figure>
+                  </div>
+                  <div class="media-content">
+                    <p class="title is-4" x-text="bark.author.username"></p>
+                    <p
+                      class="subtitle is-6"
+                      x-text="`@${bark.author.id} · ${epochTime(bark.date)}`"
+                    ></p>
+                  </div>
+                </div>
+
+                <div class="content" x-text="bark.content"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>barker</strong> by
+          <a href="https://connorcode.com">Connor Slade</a>.
+          <a href="https://github.com/Basicprogrammer10/barker">Source code</a>
+          is licenced under
+          <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use afire::prelude::*;
+use afire::{prelude::*, ServeStatic};
 use parking_lot::Mutex;
 use rusqlite::Connection;
 
@@ -33,6 +33,7 @@ fn main() {
 
     // Make web server
     let mut server = Server::new(&app.config.server_host, app.config.server_port);
+    ServeStatic::new("web/static").attach(&mut server);
     routes::attatch(&mut server, app);
 
     server.start().unwrap();
