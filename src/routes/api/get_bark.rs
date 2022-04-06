@@ -33,6 +33,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         };
 
         // Send response
-        Response::new().text(format!(r#"{{"content": "{}", "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, content, date, author_id, author_username))
+        Response::new()
+            .text(format!(r#"{{"content": "{}", "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, content, date, author_id, author_username))
+            .content(Content::JSON)
     });
 }

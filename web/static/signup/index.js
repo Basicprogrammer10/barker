@@ -65,6 +65,7 @@ function submit() {
             JSON.stringify({
               token: d.token,
               username: username.value,
+              id: d.userId
             })
           );
           let params = new URLSearchParams(window.location.search);

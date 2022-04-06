@@ -25,8 +25,9 @@
 
   <body
     x-data="data()"
-    x-init="barks = await (await fetch('/api/recent')).json();loading=false"
-    @barkSend="newBark=false;$refs.container.classList.remove('blured')"
+    x-init="barks = await (await fetch('/api/recent')).json();loading=false;"
+    @refresh-barks="barks = await (await fetch('/api/recent')).json()"
+    @bark-send="newBark=false;$refs.container.classList.remove('blured')"
   >
     <div class="container" x-ref="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -115,13 +116,15 @@
               </div>
             </div>
 
-            <div class="content" x-text="bark.content"></div>
+            <div class="content" x-html="`<p>${bark.content.replace(/\\n/g, '<br>')}</p>`"></div>
             <span icon-con><ion-icon name="heart"></ion-icon></span>
             <span icon-con><ion-icon name="chatbox-ellipses"></ion-icon></span>
             <span icon-con><ion-icon name="link"></ion-icon></span>
             <span x-show="session != null && bark.author.id == session.id">
               <span sep-line></span>
-              <span icon-con><ion-icon name="trash"></ion-icon></span>
+              <span icon-con @click="deleteBark(session.token, bark.id)"
+                ><ion-icon name="trash"></ion-icon
+              ></span>
             </span>
           </div>
         </div>

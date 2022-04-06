@@ -1,6 +1,6 @@
 use afire::prelude::*;
 
-use crate::{App, Arc, Server};
+use crate::{common::safe_json, App, Arc, Server};
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
     server.route(Method::GET, "/api/recent", move |req| {
@@ -16,8 +16,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         // Get recent barks
         let out = {
             let db = app.database.lock();
-            let mut stmt = db.prepare("SELECT content, barks.date, users.id, users.username FROM barks JOIN users ON barks.author_id = users.id ORDER BY barks.date DESC LIMIT ?").unwrap();
-            stmt.query_map([count], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?))).unwrap().into_iter().map(|x| x.unwrap()).map(|x: (String, u64, String, String)| format!(r#"{{"content": "{}", "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, x.0, x.1, x.2, x.3)).collect::<Vec<String>>().join(", ")
+            let mut stmt = db.prepare("SELECT content, barks.date, barks.id, users.id, users.username FROM barks JOIN users ON barks.author_id = users.id WHERE deleted = false ORDER BY barks.date DESC LIMIT ?").unwrap();
+            stmt.query_map([count], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?))).unwrap().into_iter().map(|x| x.unwrap()).map(|x: (String, u64, String, String, String)| format!(r#"{{"content": "{}", "date": {}, "id": "{}", "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&x.0), x.1, x.2, x.3, safe_json(&x.4))).collect::<Vec<String>>().join(", ")
         };
 
         // Send response

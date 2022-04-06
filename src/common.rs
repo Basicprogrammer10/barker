@@ -10,3 +10,12 @@ pub fn get_ip(req: &Request) -> String {
 
     ip
 }
+
+pub fn safe_json(text: &str) -> String {
+    text.replace('\n', "\\n")
+        .replace('\\', "\\\\")
+        .replace('&', "&amp;")
+        .replace('"', "&quot;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+}

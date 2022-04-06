@@ -1,12 +1,12 @@
 use afire::prelude::*;
 use rand::{distributions::Alphanumeric, Rng};
-use rusqlite::params;
+use rusqlite::Error;
 use serde_json::Value;
 
 use crate::{common::get_ip, App, Arc, Server};
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
-    server.route(Method::POST, "/api/new", move |req| {
+    server.route(Method::POST, "/api/delete", move |req| {
         // Get user session
         let body = req.body_string().unwrap();
         let json: Value = match serde_json::from_str(&body) {
@@ -44,46 +44,47 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .find(|x| x.session_id == *session)
         {
             Some(i) => i.to_owned(),
-            None => return Response::new()
-                .status(400)
-                .text(r#"{"error": "Invalid session"}"#)
-                .content(Content::JSON),
+            None => {
+                return Response::new()
+                    .status(400)
+                    .text(r#"{"error": "Invalid session"}"#)
+                    .content(Content::JSON)
+            }
         };
 
         // Valadate Session
         if session.created.elapsed().as_secs() > app.config.session_timeout {
-            app.sessions.lock().retain(|x| x.session_id != session.user_id);
+            app.sessions
+                .lock()
+                .retain(|x| x.session_id != session.user_id);
             return Response::new()
                 .status(400)
                 .text(r#"{"error": "Session expired"}"#)
                 .content(Content::JSON);
         }
 
-        // Valadate Message
-        if message.len() > app.config.max_message_len && app.config.max_message_len != 0 {
-            return Response::new().status(400).text(format!(
-                r#"{{"error": "Message too long. Keep it under {} chars"}}"#,
-                app.config.max_message_len
-            ));
+        // Tru to set message to deleated
+        match app
+            .database
+            .lock()
+            .execute("UPDATE barks SET deleted = true WHERE id = ?", [message])
+        {
+            Ok(_) => {}
+            Err(Error::SqliteFailure(_, _)) => {
+                return Response::new()
+                    .status(400)
+                    .text(r#"{"error": "Message not found"}"#)
+                    .content(Content::JSON)
+            }
+            e => {
+                e.unwrap();
+            }
         }
-
-        if message.is_empty() {
-            return Response::new()
-                .status(400)
-                .text(r#"{"error": "Message body empty!"}"#)
-                .content(Content::JSON);
-        }
-
-        let bark_id = rand::thread_rng()
-            .sample_iter(&Alphanumeric)
-            .take(10)
-            .map(char::from)
-            .collect::<String>();
-
-        // Add message to database
-        app.database.lock().execute("INSERT INTO barks (id, author_id, ip, content, deleted, date) VALUES (?, ?, ?, ?, false, strftime('%s','now'))", params![bark_id, session.user_id, get_ip(&req), message]).unwrap();
+        println!("🗑 Deleted bark [{}]", message);
 
         // Send response
-        Response::new().text(format!(r#"{{"id": "{}"}}"#, bark_id)).content(Content::JSON)
+        Response::new()
+            .text(format!(r#"{{"delete": "success"}}"#))
+            .content(Content::JSON)
     });
 }

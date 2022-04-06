@@ -109,6 +109,7 @@
   height: 20px;
   display: inline-block;
   margin-right: 10px;
+  cursor: pointer;
 }
 
 [sep-line] {

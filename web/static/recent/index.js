@@ -57,7 +57,6 @@ function genAvatarImage(seed) {
 function sendBark() {
   let value = document.querySelector("[new-text]").value;
   let session = JSON.parse(localStorage.getItem("session"));
-  document.querySelector("[submit]").classList.add("is-loading");
 
   fetch("/api/new", {
     method: "POST",
@@ -68,21 +67,52 @@ function sendBark() {
   })
     .then((d) => d.json())
     .then((d) => {
-      if ("error" in d) {
-        bulmaToast.toast({
+      if ("error" in d)
+        return bulmaToast.toast({
           message: d.error,
           duration: 5000,
           type: "is-danger",
           dismissible: true,
           animate: { in: "fadeIn", out: "fadeOut" },
         });
-        return document.body.dispatchEvent(new CustomEvent("barkSend"));
-      }
 
-      document.body.dispatchEvent(new CustomEvent("barkSend"));
+      document.body.dispatchEvent(new CustomEvent("refresh-barks"));
+      document.body.dispatchEvent(new CustomEvent("bark-send"));
       document.querySelector("[submit]").classList.remove("is-loading");
       bulmaToast.toast({
         message: "Sucess!",
+        duration: 5000,
+        type: "is-success",
+        dismissible: true,
+        animate: { in: "fadeIn", out: "fadeOut" },
+      });
+    });
+}
+
+function deleteBark(token, id) {
+  if (!confirm("are you sure you want to delete this bark?")) return;
+
+  fetch("/api/delete", {
+    method: "POST",
+    body: JSON.stringify({
+      token: token,
+      message: id,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d)
+        return bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+
+      document.body.dispatchEvent(new CustomEvent("refresh-barks"));
+      bulmaToast.toast({
+        message: "message deleted",
         duration: 5000,
         type: "is-success",
         dismissible: true,
