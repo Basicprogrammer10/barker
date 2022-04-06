@@ -62,16 +62,25 @@
 
 //
 
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
 .avatar {
   border-radius: 6px;
 }
 
 .media {
   margin-bottom: 0.5rem !important;
+}
+
+[login] {
+  width: 30%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+[usernameDisplay] {
+  display: inline;
+}
+
+[logout] {
+  cursor: pointer;
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/bulma-toast@2.4.1/dist/bulma-toast.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
+    ></script>
+    <script src="/login/index.js"></script>
+    <title>🐶 barker — login</title>
+  </head>
+
+  <body x-data="">
+    <div class="container">
+      <form class="box" onsubmit="return false" login>
+        <div class="field">
+          <label class="label">Username</label>
+          <div class="control">
+            <input class="input" type="text" username />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" type="password" password />
+          </div>
+        </div>
+
+        <button class="button is-primary" submit @click="submit()">
+          Sign in
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

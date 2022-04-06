@@ -8,10 +8,13 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
     ></script>
     <script src="/recent/index.js"></script>
-    <title>🐶 barker</title>
+    <title>🐶 barker — recent</title>
   </head>
 
-  <body>
+  <body
+    x-data="data()"
+    x-init="barks = await (await fetch('/api/recent')).json();loading=false"
+  >
     <div class="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
@@ -38,56 +41,75 @@
             </a>
           </div>
         </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons" x-show="session == null">
+              <a
+                class="button is-primary"
+                @click="location = '/signup?return=/recent'"
+              >
+                <strong>Sign up</strong>
+              </a>
+              <a
+                class="button is-light"
+                @click="location = '/login?return=/recent'"
+              >
+                Log in
+              </a>
+            </div>
+            <div x-show="session != null">
+              <p x-text="session.username" usernameDisplay></p>
+              <span class="icon" logout @click="logout(session)"
+                ><i class="fa fa-sign-out"></i
+              ></span>
+            </div>
+          </div>
+        </div>
       </nav>
 
       <br />
 
-      <div
-        x-data="{loading: true, barks: []}"
-        x-init="barks = await (await fetch('/api/recent')).json();loading=false"
-      >
-        <template x-if="loading">
-          <p>Loading...</p>
-        </template>
+      <template x-if="loading">
+        <p>Loading...</p>
+      </template>
 
-        <div class="cards">
-          <template x-for="bark in barks">
-            <div class="card">
-              <div class="card-content">
-                <div class="media">
-                  <div class="media-left">
-                    <figure
-                      class="image is-48x48"
-                      x-html="genAvatarImage(bark.author)"
-                    ></figure>
-                  </div>
-                  <div class="media-content">
-                    <p class="title is-4" x-text="bark.author.username"></p>
-                    <p
-                      class="subtitle is-6"
-                      x-text="`@${bark.author.id} · ${epochTime(bark.date)}`"
-                    ></p>
-                  </div>
-                </div>
-
-                <div class="content" x-text="bark.content"></div>
+      <template x-for="bark in barks">
+        <div class="card block">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure
+                  class="image is-48x48"
+                  x-html="genAvatarImage(bark.author)"
+                ></figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4" x-text="bark.author.username"></p>
+                <p
+                  class="subtitle is-6"
+                  x-text="`@${bark.author.id} · ${epochTime(bark.date)}`"
+                ></p>
               </div>
             </div>
-          </template>
-        </div>
-      </div>
-    </div>
 
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <p>
-          <strong>barker</strong> by
-          <a href="https://connorcode.com">Connor Slade</a>.
-          <a href="https://github.com/Basicprogrammer10/barker">Source code</a>
-          is licenced under
-          <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>.
-        </p>
-      </div>
-    </footer>
+            <div class="content" x-text="bark.content"></div>
+          </div>
+        </div>
+      </template>
+    </div>
   </body>
 </html>
+
+<!-- <footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>barker</strong> by
+      <a href="https://connorcode.com">Connor Slade</a>.
+      <a href="https://github.com/Basicprogrammer10/barker">Source code</a>
+      is licenced under
+      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>.
+    </p>
+  </div>
+</footer>
+ -->

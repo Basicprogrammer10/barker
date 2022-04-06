@@ -17,7 +17,11 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         };
         let session = match json.get("token") {
             Some(i) => i.as_str().unwrap(),
-            None => return Response::new().text("No token supplied"),
+            None => {
+                return Response::new()
+                    .text(r#"{"error": "No token supplied"}"#)
+                    .content(Content::JSON)
+            }
         }
         .to_owned();
 
@@ -28,6 +32,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         }
 
         // Send response / Remove cookie
-        Response::new().text("Logged out")
+        Response::new()
+            .text(r#"{"logout": "sucess"}"#)
+            .content(Content::JSON)
     });
 }

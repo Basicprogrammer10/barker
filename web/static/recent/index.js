@@ -7,6 +7,46 @@ const TIME_UNITS = [
   ["year", 0],
 ];
 
+function safeJsonParse(json) {
+  try {
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+function data() {
+  return {
+    loading: true,
+    session: safeJsonParse(localStorage.getItem("session")),
+    barks: [],
+  };
+}
+
+function logout(session) {
+  fetch("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d) {
+        bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+      }
+
+      localStorage.removeItem("session");
+      window.location = "/";
+    });
+}
+
 function genAvatarImage(seed) {
   if (seed.username == "darren")
     return '<img class="avatar" src="/img/beans.png" />';
