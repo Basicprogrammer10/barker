@@ -18,6 +18,7 @@ function safeJsonParse(json) {
 function data() {
   return {
     loading: true,
+    newBark: false,
     session: safeJsonParse(localStorage.getItem("session")),
     barks: [],
   };
@@ -53,6 +54,57 @@ function genAvatarImage(seed) {
   return `<img class="avatar" src="https://avatars.dicebear.com/api/adventurer-neutral/${seed.id}.svg" />`;
 }
 
+function sendBark() {
+  let value = document.querySelector("[new-text]").value;
+  let session = JSON.parse(localStorage.getItem("session"));
+  document.querySelector("[submit]").classList.add("is-loading");
+
+  fetch("/api/new", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+      message: value,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d) {
+        bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+        return document.body.dispatchEvent(new CustomEvent("barkSend"));
+      }
+
+      document.body.dispatchEvent(new CustomEvent("barkSend"));
+      document.querySelector("[submit]").classList.remove("is-loading");
+      bulmaToast.toast({
+        message: "Sucess!",
+        duration: 5000,
+        type: "is-success",
+        dismissible: true,
+        animate: { in: "fadeIn", out: "fadeOut" },
+      });
+    });
+}
+
+function checkNewLen() {
+  let value = document.querySelector("[new-text]").value;
+  let chars = value.length;
+
+  if (chars > 256) {
+    document.querySelector("[new-text]").value = value.substr(0, 256);
+    chars = 256;
+  }
+
+  document.querySelector("[char-count]").innerHTML = `${chars}/256${
+    chars >= 256 ? "!" : ""
+  }`;
+}
+
 function epochTime(time) {
   time = new Date().getTime() / 1000 - time;
   for (let e = 0; e < TIME_UNITS.length; e++) {
@@ -60,11 +112,23 @@ function epochTime(time) {
 
     if (i[1] == 0 || time < i[1]) {
       time = Math.round(time);
-      return `${time} ${i[0]}${time > 1 ? "s" : ""}`;
+      return `${time} ${i[0]}${time > 1 ? "s" : ""} ago`;
     }
 
     time /= i[1];
   }
 
-  return `${Math.round(time)} years`;
+  return `${Math.round(time)} years ago`;
 }
+
+window.addEventListener("load", () => {
+  const textBox = document.querySelector("[new-text]");
+  textBox.style.height = "80px";
+  textBox.style.overflowY = "hidden";
+
+  textBox.addEventListener("input", (e) => {
+    localStorage.setItem("text", e.target.value);
+    textBox.style.height = "auto";
+    textBox.style.height = textBox.scrollHeight + "px";
+  });
+});

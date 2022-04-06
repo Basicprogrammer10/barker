@@ -3,6 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="/css/index.css" />
+    <!--  -->
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <!--  -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/bulma-toast@2.4.1/dist/bulma-toast.min.js"
+    ></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
@@ -14,8 +28,9 @@
   <body
     x-data="data()"
     x-init="barks = await (await fetch('/api/recent')).json();loading=false"
+    @barkSend="newBark=false;$refs.container.classList.remove('blured')"
   >
-    <div class="container">
+    <div class="container" x-ref="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">
@@ -26,44 +41,53 @@
         <div id="navbarBasicExample" class="navbar-menu">
           <div class="navbar-start">
             <a class="navbar-item" href="/home">
-              Home
+              home
             </a>
 
+            <a
+              class="navbar-item"
+              x-show="session!=null"
+              @click="newBark=!newBark;$refs.container.classList.toggle('blured')"
+            >
+              new
+            </a>
             <a class="navbar-item" href="/recent">
-              Recent
+              recent
             </a>
 
             <a
               class="navbar-item"
               href="https://github.com/Basicprogrammer10/barker"
             >
-              Source Code
+              source code
             </a>
           </div>
         </div>
 
         <div class="navbar-end">
           <div class="navbar-item">
-            <div class="buttons" x-show="session == null">
+            <div class="buttons" x-show="session==null">
               <a
                 class="button is-primary"
                 @click="location = '/signup?return=/recent'"
               >
-                <strong>Sign up</strong>
+                <strong>sign up</strong>
               </a>
               <a
                 class="button is-light"
                 @click="location = '/login?return=/recent'"
               >
-                Log in
+                log in
               </a>
             </div>
-            <div x-show="session != null">
-              <p x-text="session.username" usernameDisplay></p>
-              <span class="icon" logout @click="logout(session)"
-                ><i class="fa fa-sign-out"></i
-              ></span>
-            </div>
+            <template x-if="session != null">
+              <div>
+                <p x-text="session.username" usernameDisplay></p>
+                <span logout @click="logout(session)">
+                  <ion-icon name="log-out"></ion-icon>
+                </span>
+              </div>
+            </template>
           </div>
         </div>
       </nav>
@@ -71,11 +95,11 @@
       <br />
 
       <template x-if="loading">
-        <p>Loading...</p>
+        <p>loading...</p>
       </template>
 
       <template x-for="bark in barks">
-        <div class="card block">
+        <div class="card block" card>
           <div class="card-content">
             <div class="media">
               <div class="media-left">
@@ -94,22 +118,54 @@
             </div>
 
             <div class="content" x-text="bark.content"></div>
+            <span icon-con><ion-icon name="heart"></ion-icon></span>
+            <span icon-con><ion-icon name="chatbox-ellipses"></ion-icon></span>
+            <span icon-con><ion-icon name="link"></ion-icon></span>
+            <span x-show="session != null && bark.author.id == session.id">
+              <span sep-line></span>
+              <span icon-con><ion-icon name="trash"></ion-icon></span>
+            </span>
           </div>
         </div>
       </template>
     </div>
+
+    <div class="box" new x-cloak x-show="newBark">
+      <span inline class="field">
+        <strong>new bark</strong>
+        <button
+          class="delete"
+          @click="newBark=!newBark;$refs.container.classList.toggle('blured')"
+        ></button>
+      </span>
+      <form onsubmit="return false">
+        <div class="field">
+          <div class="control">
+            <textarea
+              class="input"
+              new-text
+              x-on:input="checkNewLen()"
+            ></textarea>
+            <span class="has-text-grey-dark" char-count>0/256</span>
+          </div>
+        </div>
+
+        <button class="button is-primary" submit @click="sendBark()">
+          bark
+        </button>
+      </form>
+    </div>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          <strong>barker</strong> by
+          <a href="https://connorcode.com">connor slade</a>.
+          <a href="https://github.com/Basicprogrammer10/barker">source code</a>
+          is licenced under
+          <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">gpl-3</a>.
+        </p>
+      </div>
+    </footer>
   </body>
 </html>
-
-<!-- <footer class="footer">
-  <div class="content has-text-centered">
-    <p>
-      <strong>barker</strong> by
-      <a href="https://connorcode.com">Connor Slade</a>.
-      <a href="https://github.com/Basicprogrammer10/barker">Source code</a>
-      is licenced under
-      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3</a>.
-    </p>
-  </div>
-</footer>
- -->

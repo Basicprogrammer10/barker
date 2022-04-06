@@ -70,6 +70,16 @@
   margin-bottom: 0.5rem !important;
 }
 
+.container {
+  filter: blur(0);
+  transition: filter 0.2s;
+}
+
+.blured {
+  filter: blur(5px);
+  pointer-events: none;
+}
+
 [login] {
   width: 30%;
   position: relative;
@@ -81,6 +91,58 @@
   display: inline;
 }
 
+[inline] {
+  display: inline-block;
+}
+
 [logout] {
   cursor: pointer;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+[icon-con] {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+[sep-line] {
+  height: 20px;
+  width: 0;
+  border-right: 1px solid #4a4a4a;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+[card] {
+  & ion-icon {
+    font-size: 20px;
+  }
+}
+
+[new] {
+  // display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 30vw;
+
+  & [char-count] {
+    float: right;
+  }
+
+  & .delete {
+    right: 20px;
+    position: absolute;
+  }
+
+  & textarea {
+    resize: none;
+    padding: 10px;
+  }
 }
