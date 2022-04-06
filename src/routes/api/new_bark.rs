@@ -42,13 +42,19 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .find(|x| x.session_id == *session)
         {
             Some(i) => i.to_owned(),
-            None => return Response::new().status(400).text("Invalid session"),
+            None => return Response::new()
+                .status(400)
+                .text(r#"{"error": "Invalid session"}"#)
+                .content(Content::JSON),
         };
 
         // Valadate Session
         if session.created.elapsed().as_secs() > app.config.session_timeout {
             app.sessions.lock().retain(|x| x.session_id != session.user_id);
-            return Response::new().status(400).text("Session expired");
+            return Response::new()
+                .status(400)
+                .text(r#"{"error": "Session expired"}"#)
+                .content(Content::JSON);
         }
 
         // Valadate Message
@@ -57,6 +63,13 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                 "Message too long! Keep it under {} chars",
                 app.config.max_message_len
             ));
+        }
+
+        if message.is_empty() {
+            return Response::new()
+                .status(400)
+                .text(r#"{"error": "Message body empty!"}"#)
+                .content(Content::JSON);
         }
 
         let bark_id = rand::thread_rng()

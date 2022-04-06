@@ -24,7 +24,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             None => {
                 return Response::new()
                     .status(400)
-                    .text("You must supply a username")
+                    .text(r#"{"error": "You must supply a username"}"#)
+                    .content(Content::JSON)
             }
         };
         let password = match json.get("password") {
@@ -32,7 +33,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             None => {
                 return Response::new()
                     .status(400)
-                    .text("You must supply a username")
+                    .text(r#"{"error": "You must supply a password"}"#)
+                    .content(Content::JSON)
             }
         };
 
@@ -48,7 +50,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .unwrap();
 
         if fresh >= 1 {
-            return Response::new().status(409).text("An account with that name already exists");
+            return Response::new().status(409).text(r#"{"error": "An account with that username already exists"}"#).content(Content::JSON);
         }
 
         // Hash + Salt Password
