@@ -22,7 +22,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             None => {
                 return Response::new()
                     .status(400)
-                    .text("You must supply a session token")
+                    .text(r#"{"error": "No token defined"}"#)
+                    .content(Content::JSON);
             }
         };
         let message = match json.get("message") {
@@ -30,7 +31,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             None => {
                 return Response::new()
                     .status(400)
-                    .text("You must supply a message")
+                    .text(r#"{"error": "No message defined"}"#)
+                    .content(Content::JSON);
             }
         };
 
@@ -60,7 +62,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         // Valadate Message
         if message.len() > app.config.max_message_len && app.config.max_message_len != 0 {
             return Response::new().status(400).text(format!(
-                "Message too long! Keep it under {} chars",
+                r#"{{"error": "Message too long. Keep it under {} chars"}}"#,
                 app.config.max_message_len
             ));
         }
