@@ -121,7 +121,7 @@
               <ion-icon
                 name="heart"
                 x-bind:class="bark[0].likeing ? 'has-text-danger': ''"
-                x-bind:class="session.token == null ? 'no-click': ''"
+                @click="setLike(session, bark)"
               ></ion-icon>
             </span>
             <span like-count x-text="bark[0].likes"></span>

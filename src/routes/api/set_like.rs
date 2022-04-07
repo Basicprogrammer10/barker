@@ -93,14 +93,20 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         app.database
             .lock()
             .execute(
-                if state {
-                    include_str!("../../sql/execute_add_like.sql")
-                } else {
-                    include_str!("../../sql/execute_remove_like.sql")
-                },
+                include_str!("../../sql/execute_remove_like.sql"),
                 params![message, session.user_id],
             )
             .unwrap();
+
+        if state {
+            app.database
+                .lock()
+                .execute(
+                    include_str!("../../sql/execute_add_like.sql"),
+                    params![message, session.user_id],
+                )
+                .unwrap();
+        }
 
         // Send response
         Response::new()

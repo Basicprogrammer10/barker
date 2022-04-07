@@ -1,3 +1,5 @@
+let ogLiked = null;
+
 function data() {
   return {
     loading: true,
@@ -29,4 +31,35 @@ async function getBarkFromId(id, session) {
   if ("error" in res) return [null, res.error];
 
   return [res, null];
+}
+
+function setLike(session, bark) {
+  if (ogLiked == null) ogLiked = [bark[0].likeing, bark[0].likes];
+  bark = bark[0];
+  bark.likeing = !bark.likeing;
+
+  fetch("/api/like", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+      message: bark.id,
+      state: bark.likeing,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d)
+        return bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+
+      let likes = ogLiked[1];
+      if (bark.likeing && !ogLiked[0]) likes = likes + 1;
+      if (!bark.likeing && ogLiked[0]) likes = likes - 1;
+      bark.likes = likes;
+    });
 }

@@ -1,3 +1,5 @@
+let ogLikes = {};
+
 function data() {
   return {
     loading: true,
@@ -60,11 +62,36 @@ async function getRecentBarks(session) {
   return d;
 }
 
-// function setLike(session, id, likeState) {
-//   let setState = !likeState;
-// }
+function setLike(session, id, barks) {
+  let bark = barks.find((e) => e.id == id);
+  if (!(bark.id in ogLikes)) ogLikes[bark.id] = [bark.likeing, bark.likes];
+  bark.likeing = !bark.likeing;
 
-// ==================
+  fetch("/api/like", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+      message: id,
+      state: bark.likeing,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d)
+        return bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+
+      let likes = ogLikes[bark.id][1];
+      if (bark.likeing && !ogLikes[bark.id][0]) likes = likes + 1;
+      if (!bark.likeing && ogLikes[bark.id][0]) likes = likes - 1;
+      bark.likes = likes;
+    });
+}
 
 function checkNewLen() {
   let value = document.querySelector("[new-text]").value;

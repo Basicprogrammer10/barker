@@ -99,7 +99,7 @@
       </template>
 
       <template x-for="bark in barks">
-        <div class="card block" card>
+        <div class="card block" x-bind:message="bark.id" card>
           <div class="card-content">
             <div class="media">
               <div class="media-left">
@@ -125,7 +125,7 @@
               ><ion-icon
                 name="heart"
                 x-bind:class="bark.likeing? 'has-text-danger': ''"
-                @click="setLike(session, bark.id, bark.likeing)"
+                @click="setLike(session, bark.id, barks)"
               ></ion-icon
             ></span>
             <span like-count x-text="bark.likes"></span>
