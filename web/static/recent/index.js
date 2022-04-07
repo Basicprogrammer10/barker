@@ -42,6 +42,30 @@ function sendBark() {
     });
 }
 
+// ==================
+
+async function getRecentBarks(session) {
+  let d = await fetch(
+    "/api/recent" + (session == null ? "" : `?token=${session.token}`)
+  ).then((d) => d.json());
+
+  if ("error" in d)
+    return bulmaToast.toast({
+      message: d.error,
+      duration: 5000,
+      type: "is-danger",
+      dismissible: true,
+      animate: { in: "fadeIn", out: "fadeOut" },
+    });
+
+  return d;
+}
+
+//   let setState = !likeState;
+// }
+
+// ==================
+
 function checkNewLen() {
   let value = document.querySelector("[new-text]").value;
   let chars = value.length;

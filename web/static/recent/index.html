@@ -26,8 +26,8 @@
 
   <body
     x-data="data()"
-    x-init="barks = await (await fetch('/api/recent')).json();loading=false;"
-    @refresh-barks="barks = await (await fetch('/api/recent')).json()"
+    x-init="barks = await getRecentBarks(session);loading=false;"
+    @refresh-barks="barks = await getRecentBarks(session)"
     @bark-send="newBark=false;$refs.container.classList.remove('blured')"
   >
     <div class="container" x-ref="container">
@@ -121,7 +121,13 @@
               class="content"
               x-html="`<p>${bark.content.replace(/\\n/g, '<br>')}</p>`"
             ></div>
-            <span icon-con like-button><ion-icon name="heart"></ion-icon></span>
+            <span icon-con like-button
+              ><ion-icon
+                name="heart"
+                x-bind:class="bark.likeing? 'has-text-danger': ''"
+                @click="setLike(session, bark.id, bark.likeing)"
+              ></ion-icon
+            ></span>
             <span like-count x-text="bark.likes"></span>
             <span icon-con
               ><ion-icon
