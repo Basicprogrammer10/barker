@@ -5,5 +5,5 @@ mod auth;
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
     api::attatch(server, app.clone());
-    auth::attatch(server, app);
+    auth::attatch(server, app.clone());
 }

@@ -1,9 +1,8 @@
 use afire::prelude::*;
-use rand::{distributions::Alphanumeric, Rng};
 use rusqlite::Error;
 use serde_json::Value;
 
-use crate::{common::get_ip, App, Arc, Server};
+use crate::{App, Arc, Server};
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
     server.route(Method::POST, "/api/delete", move |req| {

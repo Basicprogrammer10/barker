@@ -20,15 +20,14 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.7.0/dist/cdn.min.js"
     ></script>
     <script src="/common.js"></script>
-    <script src="/recent/index.js"></script>
+    <script src="/bark/index.js"></script>
     <title>🐶 barker — recent</title>
   </head>
 
   <body
     x-data="data()"
-    x-init="barks = await (await fetch('/api/recent')).json();loading=false;"
-    @refresh-barks="barks = await (await fetch('/api/recent')).json()"
-    @bark-send="newBark=false;$refs.container.classList.remove('blured')"
+    x-init="bark = await getBarkFromId(getQueryId());loading=false;"
+    @refresh-barks="bark = await getBarkFromId(getQueryId())"
   >
     <div class="container" x-ref="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -47,10 +46,11 @@
             <a
               class="navbar-item"
               x-show="session!=null"
-              @click="newBark=!newBark;$refs.container.classList.toggle('blured')"
+              @click="alert('TODO')"
             >
               new
             </a>
+
             <a class="navbar-item" href="/recent">
               recent
             </a>
@@ -69,13 +69,13 @@
             <div class="buttons" x-show="session==null">
               <a
                 class="button is-primary"
-                @click="location = '/signup?return=/recent'"
+                @click="location = `/signup?return=/bark${location.search}`"
               >
                 <strong>sign up</strong>
               </a>
               <a
                 class="button is-light"
-                @click="location = '/login?return=/recent'"
+                @click="location = `/login?return=/bark${location.search}`"
               >
                 log in
               </a>
@@ -91,78 +91,52 @@
           </div>
         </div>
       </nav>
-
       <br />
 
-      <template x-if="loading">
-        <p>loading...</p>
-      </template>
-
-      <template x-for="bark in barks">
+      <p x-show="loading">loading...</p>
+      <template x-if="bark[0] != null">
         <div class="card block" card>
           <div class="card-content">
             <div class="media">
               <div class="media-left">
                 <figure
                   class="image is-48x48"
-                  x-html="genAvatarImage(bark.author)"
+                  x-html="genAvatarImage(bark[0].author)"
                 ></figure>
               </div>
               <div class="media-content">
-                <p class="title is-4" x-text="bark.author.username"></p>
+                <p class="title is-4" x-text="bark[0].author.username"></p>
                 <p
                   class="subtitle is-6"
-                  x-text="`@${bark.author.id} · ${epochTime(bark.date)}`"
+                  x-text="`@${bark[0].author.id} · ${epochTime(bark[0].date)}`"
                 ></p>
               </div>
             </div>
 
             <div
               class="content"
-              x-html="`<p>${bark.content.replace(/\\n/g, '<br>')}</p>`"
+              x-html="`<p>${bark[0].content.replace(/\\n/g, '<br>')}</p>`"
             ></div>
             <span icon-con><ion-icon name="heart"></ion-icon></span>
-            <span icon-con
-              ><ion-icon
-                name="chatbox-ellipses"
-                @click="location = `/bark?id=${bark.id}`;"
-              ></ion-icon
-            ></span>
-            <span x-show="session != null && bark.author.id == session.id">
+            <span x-show="session != null && bark[0].author.id == session.id">
               <span sep-line></span>
-              <span icon-con @click="deleteBark(session.token, bark.id)"
+              <span icon-con @click="deleteBark(session.token, bark[0].id)"
                 ><ion-icon name="trash"></ion-icon
               ></span>
             </span>
           </div>
         </div>
       </template>
-    </div>
 
-    <div class="box" new x-cloak x-show="newBark">
-      <span inline class="field">
-        <strong>new bark</strong>
-        <button
-          class="delete"
-          @click="newBark=!newBark;$refs.container.classList.toggle('blured')"
-        ></button>
-      </span>
-      <form onsubmit="return false">
-        <div class="field">
-          <div class="control">
-            <textarea
-              class="input"
-              new-text
-              x-on:input="checkNewLen()"
-            ></textarea>
-            <span class="has-text-grey-dark" char-count>0/256</span>
+      <template x-if="!loading && bark[0] == null">
+        <div class="card block" card>
+          <div class="card-content">
+            <p x-text="bark[1]"></p>
           </div>
         </div>
+      </template>
 
-        <button class="button is-primary" submit @click="sendBark()">
-          bark
-        </button>
-      </form>
+      <!-- COMMENT  STUFF HERE -->
     </div>
 
     <footer class="footer">
