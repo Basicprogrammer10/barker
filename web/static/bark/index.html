@@ -26,8 +26,8 @@
 
   <body
     x-data="data()"
-    x-init="bark = await getBarkFromId(getQueryId());loading=false;"
-    @refresh-barks="bark = await getBarkFromId(getQueryId())"
+    x-init="bark = await getBarkFromId(getQueryId(),session);loading=false;"
+    @refresh-barks="bark = await getBarkFromId(getQueryId(),session)"
   >
     <div class="container" x-ref="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -94,7 +94,7 @@
       <br />
 
       <p x-show="loading">loading...</p>
-      <template x-if="bark[0] != null">
+      <template x-if="bark != null && bark[0] != null">
         <div class="card block" card>
           <div class="card-content">
             <div class="media">
@@ -117,7 +117,14 @@
               class="content"
               x-html="`<p>${bark[0].content.replace(/\\n/g, '<br>')}</p>`"
             ></div>
-            <span icon-con><ion-icon name="heart"></ion-icon></span>
+            <span icon-con like-button>
+              <ion-icon
+                name="heart"
+                x-bind:class="bark[0].likeing ? 'has-text-danger': ''"
+                x-bind:class="session.token == null ? 'no-click': ''"
+              ></ion-icon>
+            </span>
+            <span like-count x-text="bark[0].likes"></span>
             <span x-show="session != null && bark[0].author.id == session.id">
               <span sep-line></span>
               <span icon-con @click="deleteBark(session.token, bark[0].id)"

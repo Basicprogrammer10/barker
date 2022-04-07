@@ -2,7 +2,7 @@ use afire::prelude::*;
 use rusqlite::params;
 use serde_json::Value;
 
-use crate::{common::get_ip, App, Arc, Server};
+use crate::{App, Arc, Server};
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
     server.route(Method::POST, "/api/like", move |req| {
@@ -76,7 +76,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .database
             .lock()
             .query_row(
-                "SELECT COUNT(*) FROM likes WHERE bark_id = ?",
+                "SELECT COUNT(*) FROM barks WHERE id = ?",
                 [message],
                 |row| row.get(0),
             )

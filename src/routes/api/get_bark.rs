@@ -21,23 +21,76 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             None => {
                 return Response::new()
                     .status(400)
-                    .text("You must supply the id to a bark")
+                    .text(r#"{"error": "No message id suplied"}"#)
+                    .content(Content::JSON)
             }
         };
+        let token = json.get("token");
 
         // Get bark
-        let (content, date, author_id, author_username, deleted, likes): (
+        let (content, date, author_id, author_username, deleted, likes, likeing): (
             String,
             u64,
             String,
             String,
             bool,
             u64,
-        ) = match app.database.lock().query_row(
-            include_str!("../../sql/query_bark.sql"),
-            params![bark_id],
-            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?)),
-        ) {
+            bool,
+        ) = match if let Some(i) = token {
+            // Get session
+            let session = match app.sessions.lock().iter().find(|x| x.session_id == *i) {
+                Some(i) => i.to_owned(),
+                None => {
+                    return Response::new()
+                        .status(400)
+                        .text(r#"{"error": "Invalid session"}"#)
+                        .content(Content::JSON)
+                }
+            };
+
+            // Valadate Session
+            if session.created.elapsed().as_secs() > app.config.session_timeout {
+                app.sessions
+                    .lock()
+                    .retain(|x| x.session_id != session.user_id);
+                return Response::new()
+                    .status(400)
+                    .text(r#"{"error": "Session expired"}"#)
+                    .content(Content::JSON);
+            }
+
+            app.database.lock().query_row(
+                include_str!("../../sql/query_bark_loggedin.sql"),
+                params![session.user_id, bark_id],
+                |row| {
+                    Ok((
+                        row.get(0)?,
+                        row.get(1)?,
+                        row.get(2)?,
+                        row.get(3)?,
+                        row.get(4)?,
+                        row.get(5)?,
+                        row.get(6)?,
+                    ))
+                },
+            )
+        } else {
+            app.database.lock().query_row(
+                include_str!("../../sql/query_bark.sql"),
+                params![bark_id],
+                |row| {
+                    Ok((
+                        row.get(0)?,
+                        row.get(1)?,
+                        row.get(2)?,
+                        row.get(3)?,
+                        row.get(4)?,
+                        row.get(5)?,
+                        false,
+                    ))
+                },
+            )
+        } {
             Ok(i) => i,
             Err(Error::QueryReturnedNoRows) => {
                 return Response::new()
@@ -55,7 +108,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Send response
         Response::new()
-            .text(format!(r#"{{"content": "{}", "id": "{}", "likes": {}, "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, likes, date, author_id, safe_json(&author_username)))
+            .text(format!(r#"{{"content": "{}", "id": "{}", "likes": {}, "likeing": {}, "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, likes, likeing, date, author_id, safe_json(&author_username)))
             .content(Content::JSON)
     });
 }

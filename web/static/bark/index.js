@@ -12,13 +12,17 @@ function getQueryId() {
   return params.get("id");
 }
 
-async function getBarkFromId(id) {
+async function getBarkFromId(id, session) {
+  let data = {
+    id,
+  };
+
+  if (session != null) data.token = session.token;
+
   let res = await (
     await fetch("/api/get", {
       method: "POST",
-      body: JSON.stringify({
-        id,
-      }),
+      body: JSON.stringify(data),
     })
   ).json();
 

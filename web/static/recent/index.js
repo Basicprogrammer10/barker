@@ -60,9 +60,9 @@ async function getRecentBarks(session) {
   return d;
 }
 
-function setLike(session, id, likeState) {
-  let setState = !likeState;
-}
+// function setLike(session, id, likeState) {
+//   let setState = !likeState;
+// }
 
 // ==================
 
