@@ -33,6 +33,14 @@ fn main() {
 
     // Make web server
     let mut server = Server::new(&app.config.server_host, app.config.server_port);
+
+    server.error_handler(|_, err| {
+        Response::new()
+            .status(500)
+            .text(format!(r#"{{"error":"{}"}}"#, err.replace('"', "\\\"")))
+            .content(Content::JSON)
+    });
+
     ServeStatic::new("web/static").attach(&mut server);
     routes::attatch(&mut server, app);
 

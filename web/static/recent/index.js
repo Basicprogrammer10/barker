@@ -31,9 +31,8 @@ function sendBark() {
 
       document.body.dispatchEvent(new CustomEvent("refresh-barks"));
       document.body.dispatchEvent(new CustomEvent("bark-send"));
-      document.querySelector("[submit]").classList.remove("is-loading");
       bulmaToast.toast({
-        message: "sucess!",
+        message: "bark created",
         duration: 5000,
         type: "is-success",
         dismissible: true,
@@ -61,8 +60,9 @@ async function getRecentBarks(session) {
   return d;
 }
 
-//   let setState = !likeState;
-// }
+function setLike(session, id, likeState) {
+  let setState = !likeState;
+}
 
 // ==================
 

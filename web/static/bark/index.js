@@ -22,11 +22,7 @@ async function getBarkFromId(id) {
     })
   ).json();
 
-  if ("error" in res)
-    return [
-      null,
-      res.error == "Bark deleted" ? "bark deleted" : "bark not found",
-    ];
+  if ("error" in res) return [null, res.error];
 
   return [res, null];
 }

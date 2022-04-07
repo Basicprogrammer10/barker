@@ -3,9 +3,10 @@ SELECT content,
       users.id,
       users.username,
       deleted,
-      count(iif(likes.bark_id == barks.id, 1, NULL))
+      (SELECT Count(*)
+       FROM   likes
+       WHERE  bark_id = barks.id)
 FROM   barks
 JOIN   users
 ON     barks.author_id = users.id
-JOIN   likes
 WHERE  barks.id = ?;

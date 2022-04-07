@@ -26,14 +26,31 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         };
 
         // Get bark
-        let (content, date, author_id, author_username, deleted, likes): (String, u64, String, String, bool, u64) = match app.database.lock().query_row(include_str!("../../sql/query_bark.sql"), params![bark_id], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?))) {
+        let (content, date, author_id, author_username, deleted, likes): (
+            String,
+            u64,
+            String,
+            String,
+            bool,
+            u64,
+        ) = match app.database.lock().query_row(
+            include_str!("../../sql/query_bark.sql"),
+            params![bark_id],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?)),
+        ) {
             Ok(i) => i,
-            Err(Error::QueryReturnedNoRows) => return Response::new().text(r#"{"error": "Bark not found"}"#).content(Content::JSON),
-            e => e.unwrap()
+            Err(Error::QueryReturnedNoRows) => {
+                return Response::new()
+                    .text(r#"{"error": "Bark not found"}"#)
+                    .content(Content::JSON)
+            }
+            e => e.unwrap(),
         };
 
         if deleted {
-            return Response::new().text(r#"{"error": "Bark deleted"}"#).content(Content::JSON);
+            return Response::new()
+                .text(r#"{"error": "Bark deleted"}"#)
+                .content(Content::JSON);
         }
 
         // Send response
