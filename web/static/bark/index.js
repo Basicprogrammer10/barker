@@ -56,10 +56,10 @@ function setLike(session, bark) {
           dismissible: true,
           animate: { in: "fadeIn", out: "fadeOut" },
         });
-
-      let likes = ogLiked[1];
-      if (bark.likeing && !ogLiked[0]) likes = likes + 1;
-      if (!bark.likeing && ogLiked[0]) likes = likes - 1;
-      bark.likes = likes;
     });
+
+  let likes = ogLiked[1];
+  if (bark.likeing && !ogLiked[0]) likes = likes + 1;
+  if (!bark.likeing && ogLiked[0]) likes = likes - 1;
+  bark.likes = likes;
 }

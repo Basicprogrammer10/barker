@@ -85,7 +85,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         if real_msg < 1 {
             return Response::new()
                 .status(400)
-                .text(r#"{{"Error": "Message not found"}}"#)
+                .text(r#"{"Error": "Message not found"}"#)
                 .content(Content::JSON);
         }
 
@@ -110,7 +110,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Send response
         Response::new()
-            .text(r#"{{"like": "success"}}"#)
+            .text(r#"{"like": "success"}"#)
             .content(Content::JSON)
     });
 }

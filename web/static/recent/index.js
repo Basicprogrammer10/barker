@@ -43,8 +43,6 @@ function sendBark() {
     });
 }
 
-// ==================
-
 async function getRecentBarks(session) {
   let d = await fetch(
     "/api/recent" + (session == null ? "" : `?token=${session.token}`)
@@ -85,12 +83,12 @@ function setLike(session, id, barks) {
           dismissible: true,
           animate: { in: "fadeIn", out: "fadeOut" },
         });
-
-      let likes = ogLikes[bark.id][1];
-      if (bark.likeing && !ogLikes[bark.id][0]) likes = likes + 1;
-      if (!bark.likeing && ogLikes[bark.id][0]) likes = likes - 1;
-      bark.likes = likes;
     });
+
+  let likes = ogLikes[bark.id][1];
+  if (bark.likeing && !ogLikes[bark.id][0]) likes += 1;
+  if (!bark.likeing && ogLikes[bark.id][0]) likes -= 1;
+  bark.likes = likes;
 }
 
 function checkNewLen() {

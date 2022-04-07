@@ -83,7 +83,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Send response
         Response::new()
-            .text(r#"{{"delete": "success"}}"#)
+            .text(r#"{"delete": "success"}"#)
             .content(Content::JSON)
     });
 }
