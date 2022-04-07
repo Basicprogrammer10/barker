@@ -9,6 +9,7 @@ pub fn init(conn: &mut Connection) {
     for i in [
         include_str!("sql/create_barks.sql"),
         include_str!("sql/create_users.sql"),
+        include_str!("sql/create_likes.sql"),
     ] {
         trans.execute(i, []).unwrap();
     }

@@ -108,8 +108,18 @@
   width: 20px;
   height: 20px;
   display: inline-block;
+  position: relative;
   margin-right: 10px;
   cursor: pointer;
+  transform: translateY(4px);
+}
+
+[like-button] {
+  margin-right: 0;
+}
+
+[like-count] {
+  margin-right: 10px;
 }
 
 [sep-line] {
@@ -118,6 +128,7 @@
   border-right: 1px solid #4a4a4a;
   display: inline-block;
   margin-right: 10px;
+  transform: translateY(4px);
 }
 
 ion-icon {

@@ -26,7 +26,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         };
 
         // Get bark
-        let (content, date, author_id, author_username, deleted): (String, u64, String, String, bool) = match app.database.lock().query_row("SELECT content, barks.date, users.id, users.username, deleted FROM barks JOIN users ON barks.author_id = users.id WHERE barks.id = ?", params![bark_id], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?))) {
+        let (content, date, author_id, author_username, deleted, likes): (String, u64, String, String, bool, u64) = match app.database.lock().query_row(include_str!("../../sql/query_bark.sql"), params![bark_id], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?, row.get(5)?))) {
             Ok(i) => i,
             Err(Error::QueryReturnedNoRows) => return Response::new().text(r#"{"error": "Bark not found"}"#).content(Content::JSON),
             e => e.unwrap()
@@ -38,7 +38,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Send response
         Response::new()
-            .text(format!(r#"{{"content": "{}", "id": "{}", "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, date, author_id, safe_json(&author_username)))
+            .text(format!(r#"{{"content": "{}", "id": "{}", "likes": {}, "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, likes, date, author_id, safe_json(&author_username)))
             .content(Content::JSON)
     });
 }
