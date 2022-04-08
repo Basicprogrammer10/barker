@@ -16,7 +16,10 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             Err(e) => {
                 return Response::new()
                     .status(400)
-                    .text(format!(r#"{{"error":  "Error parsing JSON", "details": "{}"}}"#, e))
+                    .text(format!(
+                        r#"{{"error":  "Error parsing JSON", "details": "{}"}}"#,
+                        e
+                    ))
                     .content(Content::JSON)
             }
         };
@@ -39,6 +42,13 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             }
         };
 
+        if username.len() > 25 {
+            return Response::new()
+                .status(400)
+                .text(r#"{"error": "Username too long (<=25)"}"#)
+                .content(Content::JSON);
+        }
+
         // Check if it is inuse
         let fresh: usize = app
             .database
@@ -51,7 +61,10 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             .unwrap();
 
         if fresh >= 1 {
-            return Response::new().status(409).text(r#"{"error": "An account with that username already exists"}"#).content(Content::JSON);
+            return Response::new()
+                .status(409)
+                .text(r#"{"error": "An account with that username already exists"}"#)
+                .content(Content::JSON);
         }
 
         // Hash + Salt Password
@@ -79,6 +92,9 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             )
             .unwrap();
 
-        Response::new().status(201).text(format!(r#"{{"id": "{}"}}"#, id)).content(Content::JSON)
+        Response::new()
+            .status(201)
+            .text(format!(r#"{{"id": "{}"}}"#, id))
+            .content(Content::JSON)
     });
 }

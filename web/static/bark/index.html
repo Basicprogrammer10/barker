@@ -127,7 +127,7 @@
                 @click="setLike(session, bark)"
               ></ion-icon>
             </span>
-            <span like-count x-text="bark[0].likes"></span>
+            <span like-count x-text="bark[0].likes != '0'? bark[0].likes: ''"></span>
             <span x-show="session != null && bark[0].author.id == session.id">
               <span sep-line></span>
               <span icon-con @click="deleteBark(session.token, bark[0].id)"
