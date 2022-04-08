@@ -13,7 +13,11 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             Err(e) => {
                 return Response::new()
                     .status(400)
-                    .text(format!("Error parsing JSON: {}", e))
+                    .text(format!(
+                        r#"{{"error":  "Error parsing JSON", "details": "{}"}}"#,
+                        e
+                    ))
+                    .content(Content::JSON)
             }
         };
         let session = match json.get("token") {
@@ -107,6 +111,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                 )
                 .unwrap();
         }
+        println!("👍️ Like [{}, {}, {}]", session.user_id, message, state);
 
         // Send response
         Response::new()

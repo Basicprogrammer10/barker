@@ -14,7 +14,8 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             Err(e) => {
                 return Response::new()
                     .status(400)
-                    .text(format!("Error parsing JSON: {}", e))
+                    .text(format!(r#"{{"error":  "Error parsing JSON", "details": "{}"}}"#, e))
+                    .content(Content::JSON)
             }
         };
         let session = match json.get("token") {
@@ -82,6 +83,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Add message to database
         app.database.lock().execute("INSERT INTO barks (id, author_id, ip, content, deleted, date) VALUES (?, ?, ?, ?, false, strftime('%s','now'))", params![bark_id, session.user_id, get_ip(&req), message]).unwrap();
+        println!("🌚 New Bark [{}, {}]", session.user_id, message);
 
         // Send response
         Response::new().text(format!(r#"{{"id": "{}"}}"#, bark_id)).content(Content::JSON)

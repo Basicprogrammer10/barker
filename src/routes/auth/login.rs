@@ -13,7 +13,11 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             Err(e) => {
                 return Response::new()
                     .status(400)
-                    .text(format!("Error parsing JSON: {}", e))
+                    .text(format!(
+                        r#"{{"error":  "Error parsing JSON", "details": "{}"}}"#,
+                        e
+                    ))
+                    .content(Content::JSON)
             }
         };
         let username = match json.get("username") {
