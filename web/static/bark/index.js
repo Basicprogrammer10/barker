@@ -23,15 +23,14 @@ function getQueryId() {
 async function getComments(id) {
   let res = await (await fetch(`/api/comments/${id}`)).json();
 
-  if ("error" in res)
-    return err(d);
+  if ("error" in res) return err(d);
 
   console.log(res);
   return res;
 }
 
 function sendComment(session) {
-  let text = document.querySelector('[comment-text]');
+  let text = document.querySelector("[comment-text]");
 
   fetch("/api/comment", {
     method: "POST",
@@ -43,15 +42,25 @@ function sendComment(session) {
   })
     .then((d) => d.json())
     .then((d) => {
-      if ("error" in d)
-        return err(d);
-        text.value = '';
-        document.body.dispatchEvent(new CustomEvent("refresh-comments"));
+      if ("error" in d) return err(d);
+      text.value = "";
+      document.body.dispatchEvent(new CustomEvent("refresh-comments"));
     });
 }
 
 function deleteComment(session, commentId) {
-
+  fetch("/api/deleteComment", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+      id: commentId,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d) return err(d);
+      document.body.dispatchEvent(new CustomEvent("refresh-comments"));
+    });
 }
 
 async function getBarkFromId(id, session) {
@@ -88,8 +97,7 @@ function setLike(session, bark) {
   })
     .then((d) => d.json())
     .then((d) => {
-      if ("error" in d)
-        return err(d);
+      if ("error" in d) return err(d);
     });
 
   let likes = ogLiked[1];

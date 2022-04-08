@@ -1,12 +1,11 @@
 use afire::prelude::*;
-use rusqlite::{params, Error};
+use rusqlite::params;
 use serde_json::Value;
 
 use crate::{App, Arc, Server};
 
 pub fn attatch(server: &mut Server, app: Arc<App>) {
-    server.route(Method::POST, "/api/delete", move |req| {
-        // Get user session
+    server.route(Method::POST, "/api/deleteComment", move |req| {
         let body = req.body_string().unwrap();
         let json: Value = match serde_json::from_str(&body) {
             Ok(i) => i,
@@ -20,32 +19,27 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                     .content(Content::JSON)
             }
         };
-        let session = match json.get("token") {
+        let token = match json.get("token") {
             Some(i) => i.as_str().unwrap(),
             None => {
                 return Response::new()
                     .status(400)
-                    .text(r#"{"error": "No token defined"}"#)
-                    .content(Content::JSON);
+                    .text(r#"{"error": "No token suplied"}"#)
+                    .content(Content::JSON)
             }
         };
-        let message = match json.get("message") {
+        let comment_id = match json.get("id") {
             Some(i) => i.as_str().unwrap(),
             None => {
                 return Response::new()
                     .status(400)
-                    .text(r#"{"error": "No message defined"}"#)
-                    .content(Content::JSON);
+                    .text(r#"{"error": "No comment id suplied"}"#)
+                    .content(Content::JSON)
             }
         };
 
-        // Get used id from session
-        let session = match app
-            .sessions
-            .lock()
-            .iter()
-            .find(|x| x.session_id == *session)
-        {
+        // Get and Valadate session
+        let session = match app.sessions.lock().iter().find(|x| x.session_id == *token) {
             Some(i) => i.to_owned(),
             None => {
                 return Response::new()
@@ -55,7 +49,6 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             }
         };
 
-        // Valadate Session
         if session.created.elapsed().as_secs() > app.config.session_timeout {
             app.sessions
                 .lock()
@@ -66,13 +59,13 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                 .content(Content::JSON);
         }
 
-        // Check if session belongs to the message author
+        // Verify user is owner of comment
         let access: u64 = app
             .database
             .lock()
             .query_row(
-                "SELECT COUNT(*) FROM barks WHERE id = ? AND author_id = ?;",
-                params![message, session.user_id],
+                "SELECT COUNT(*) FROM comments WHERE id = ? AND user_id = ?;",
+                params![comment_id, session.user_id],
                 |row| row.get(0),
             )
             .unwrap();
@@ -80,30 +73,18 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         if access == 0 {
             return Response::new()
                 .status(400)
-                .text(r#"{"error": "You dont own this bark!"}"#)
+                .text(r#"{"error": "You dont own this comment!"}"#)
                 .content(Content::JSON);
         }
 
-        // Tru to set message to deleated
-        match app
-            .database
+        app.database
             .lock()
-            .execute("UPDATE barks SET deleted = true WHERE id = ?", [message])
-        {
-            Ok(_) => {}
-            Err(Error::SqliteFailure(_, _)) => {
-                return Response::new()
-                    .status(400)
-                    .text(r#"{"error": "Message not found"}"#)
-                    .content(Content::JSON)
-            }
-            e => {
-                e.unwrap();
-            }
-        }
-        println!("🗑 Deleted bark [{}]", message);
+            .execute(
+                include_str!("../../sql/execute_delete_comment.sql"),
+                [comment_id],
+            )
+            .unwrap();
 
-        // Send response
         Response::new()
             .text(r#"{"delete": "success"}"#)
             .content(Content::JSON)
