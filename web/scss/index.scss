@@ -102,6 +102,20 @@
   display: inline-block;
 }
 
+[comment] {
+  & [sep] {
+    margin: 0;
+  }
+
+  & [icon] {
+    margin-right: 0.5rem;
+  }
+}
+
+[comments] {
+
+}
+
 [x-cloak] {
   display: none !important;
 }
@@ -127,11 +141,21 @@
   display: flex;
   border-radius: 4px;
   color: #f5f5f5;
+  transition: background 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background: hsl(217, 71%, 45%);
+  }
 
   & ion-icon {
     width: 20px;
     height: 20px;
   }
+}
+
+[comment-meta] {
+  display: inline-block;
 }
 
 [like-button] {

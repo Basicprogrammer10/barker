@@ -33,6 +33,7 @@ function sendBark() {
 
       document.body.dispatchEvent(new CustomEvent("refresh-barks"));
       document.body.dispatchEvent(new CustomEvent("bark-send"));
+      document.querySelector("[new-text]").value = '';
       bulmaToast.toast({
         message: "bark created",
         duration: 5000,

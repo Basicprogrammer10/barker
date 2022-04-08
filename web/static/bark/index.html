@@ -26,8 +26,11 @@
 
   <body
     x-data="data()"
-    x-init="bark = await getBarkFromId(getQueryId(),session);loading=false;"
+    x-init="bark = await getBarkFromId(getQueryId(), session);
+    loading=false;
+    comments = await getComments(getQueryId());"
     @refresh-barks="bark = await getBarkFromId(getQueryId(),session)"
+    @refresh-comments="comments = await getComments(getQueryId())"
   >
     <div class="container" x-ref="container">
       <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -144,12 +147,66 @@
       </template>
 
       <div class="box">
-        <div comment-container>
-          <input class="input is-normal" type="text" placeholder="comment..." />
-          <span send-button>
+        <div comment-container x-cloak x-show="session != null">
+          <input
+            class="input is-normal"
+            type="text"
+            placeholder="comment..."
+            comment-text
+          />
+          <span send-button @click="sendComment(session)">
             <ion-icon name="send"></ion-icon>
           </span>
         </div>
+        <br />
+
+        <template x-for="comment in comments" comments>
+          <div comment>
+            <div card>
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-left" icon>
+                    <figure
+                      class="image is-24x24"
+                      x-html="genAvatarImage(comment.author)"
+                    ></figure>
+                  </div>
+                  <div class="media-content">
+                    <p
+                      comment-meta
+                      x-text="`${comment.author.username} · ${epochTime(comment.date)}`"
+                    ></p>
+                    <span
+                      x-show="session != null && comment.author.id == session.id"
+                    >
+                      ·
+                      <span
+                        icon-con
+                        @click="deleteComment(session, comment.id)"
+                        ><ion-icon name="trash"></ion-icon
+                      ></span>
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  class="content"
+                  x-html="`<p>${comment.content.replace(/\\n/g, '<br>')}</p>`"
+                ></div>
+                <!-- <span icon-con like-button>
+                  <ion-icon
+                    name="heart"
+                    x-bind:class="bark[0].likeing ? 'has-text-danger': ''"
+                    @click="setLike(session, bark)"
+                  ></ion-icon>
+                </span>
+                <span like-count x-text="bark[0].likes"></span>
+                -->
+              </div>
+            </div>
+            <hr sep />
+          </div>
+        </template>
       </div>
     </div>
 
