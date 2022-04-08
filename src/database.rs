@@ -10,6 +10,7 @@ pub fn init(conn: &mut Connection) {
         include_str!("sql/create_barks.sql"),
         include_str!("sql/create_users.sql"),
         include_str!("sql/create_likes.sql"),
+        include_str!("sql/create_comments.sql"),
     ] {
         trans.execute(i, []).unwrap();
     }
