@@ -114,6 +114,23 @@
   transform: translateY(4px);
 }
 
+[comment-container] {
+  display: flex;
+}
+
+[send-button] {
+  background: #209cee;
+  margin-left: 10px;
+  padding: 10px;
+  display: flex;
+  border-radius: 4px;
+  color: #f5f5f5;
+}
+[send-button] ion-icon {
+  width: 20px;
+  height: 20px;
+}
+
 [like-button] {
   margin-right: 0;
 }
