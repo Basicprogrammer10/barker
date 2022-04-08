@@ -29,7 +29,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
         let token = json.get("token");
 
         // Get bark
-        let (content, date, author_id, author_username, deleted, likes, likeing): (
+        let (content, date, author_id, author_username, deleted, likes, likeing, comments): (
             String,
             u64,
             String,
@@ -37,6 +37,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
             bool,
             u64,
             bool,
+            u64
         ) = match if let Some(i) = token {
             // Get session
             let session = match app.sessions.lock().iter().find(|x| x.session_id == *i) {
@@ -72,6 +73,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                         row.get(4)?,
                         row.get(5)?,
                         row.get(6)?,
+                        row.get(7)?,
                     ))
                 },
             )
@@ -88,6 +90,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                         row.get(4)?,
                         row.get(5)?,
                         false,
+                        row.get(6)?,
                     ))
                 },
             )
@@ -109,7 +112,7 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
 
         // Send response
         Response::new()
-            .text(format!(r#"{{"content": "{}", "id": "{}", "likes": {}, "likeing": {}, "date": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, likes, likeing, date, author_id, safe_json(&author_username)))
+            .text(format!(r#"{{"content": "{}", "id": "{}", "likes": {}, "likeing": {}, "date": {}, "comments": {}, "author": {{"id": "{}", "username": "{}"}}}}"#, safe_json(&content), bark_id, likes, likeing, date, comments, author_id, safe_json(&author_username)))
             .content(Content::JSON)
     });
 }

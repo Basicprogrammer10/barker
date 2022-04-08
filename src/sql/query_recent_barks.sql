@@ -5,6 +5,9 @@ SELECT content,
       users.username,
       (SELECT Count(*)
        FROM   likes
+       WHERE  bark_id = barks.id),
+      (SELECT Count(*)
+       FROM   comments
        WHERE  bark_id = barks.id)
 FROM   barks
       JOIN users

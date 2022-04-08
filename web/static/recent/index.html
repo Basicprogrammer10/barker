@@ -129,12 +129,13 @@
               ></ion-icon
             ></span>
             <span like-count x-text="bark.likes"></span>
-            <span icon-con
+            <span icon-con like-button
               ><ion-icon
                 name="chatbox-ellipses"
                 @click="location = `/bark?id=${bark.id}`;"
               ></ion-icon
             ></span>
+            <span like-count x-text="bark.comments"></span>
             <span x-show="session != null && bark.author.id == session.id">
               <span sep-line></span>
               <span icon-con @click="deleteBark(session.token, bark.id)"

@@ -46,19 +46,21 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                     row.get(4)?,
                     row.get(5)?,
                     row.get(6)?,
+                    row.get(7)?,
                 ))
             })
             .unwrap()
             .into_iter()
             .map(|x| x.unwrap())
-            .map(|x: (String, u64, String, String, String, u64, u64)| {
+            .map(|x: (String, u64, String, String, String, u64, u64, u64)| {
                 format!(
-                    r#"{{"content": "{}", "likes": {}, "likeing": {}, "date": {}, "id": "{}", "author": {{"id": "{}", "username": "{}"}}}}"#,
+                    r#"{{"content": "{}", "likes": {}, "likeing": {}, "date": {}, "id": "{}", "comments": {}, "author": {{"id": "{}", "username": "{}"}}}}"#,
                     safe_json(&x.0),
                     x.5,
                     x.6 >= 1,
                     x.1,
                     x.2,
+                    x.7,
                     x.3,
                     safe_json(&x.4)
                 )
@@ -78,18 +80,20 @@ pub fn attatch(server: &mut Server, app: Arc<App>) {
                     row.get(3)?,
                     row.get(4)?,
                     row.get(5)?,
+                    row.get(6)?,
                 ))
             })
             .unwrap()
             .into_iter()
             .map(|x| x.unwrap())
-            .map(|x: (String, u64, String, String, String, u64)| {
+            .map(|x: (String, u64, String, String, String, u64, u64)| {
                 format!(
-                    r#"{{"content": "{}", "likes": {}, "date": {}, "id": "{}", "author": {{"id": "{}", "username": "{}"}}}}"#,
+                    r#"{{"content": "{}", "likes": {}, "date": {}, "id": "{}", "comments": {}, "author": {{"id": "{}", "username": "{}"}}}}"#,
                     safe_json(&x.0),
                     x.5,
                     x.1,
                     x.2,
+                    x.6,
                     x.3,
                     safe_json(&x.4)
                 )

@@ -9,7 +9,10 @@ SELECT content,
       (SELECT Count(*)
        FROM   likes
        WHERE  bark_id = barks.id
-              AND user_id = ?)
+              AND user_id = ?),
+      (SELECT Count(*)
+       FROM   comments
+       WHERE  bark_id = barks.id)
 FROM   barks
       JOIN users
         ON barks.author_id = users.id
