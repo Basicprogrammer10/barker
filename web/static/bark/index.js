@@ -4,6 +4,7 @@ let queryId = null;
 function data() {
   return {
     session: safeJsonParse(localStorage.getItem("session")),
+    newBark: false,
     loading: true,
     bark: null,
     error: null,
@@ -104,6 +105,32 @@ function setLike(session, bark) {
   if (bark.likeing && !ogLiked[0]) likes = likes + 1;
   if (!bark.likeing && ogLiked[0]) likes = likes - 1;
   bark.likes = likes;
+}
+
+function sendBark(session) {
+  let value = document.querySelector("[new-text]").value;
+
+  fetch("/api/new", {
+    method: "POST",
+    body: JSON.stringify({
+      token: session.token,
+      message: value,
+    }),
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      if ("error" in d)
+        return bulmaToast.toast({
+          message: d.error,
+          duration: 5000,
+          type: "is-danger",
+          dismissible: true,
+          animate: { in: "fadeIn", out: "fadeOut" },
+        });
+
+      document.querySelector("[new-text]").value = "";
+      location = `/bark?id=${d.id}`
+    });
 }
 
 function err(d) {

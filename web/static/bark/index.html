@@ -49,7 +49,7 @@
             <a
               class="navbar-item"
               x-show="session!=null"
-              @click="alert('TODO')"
+              @click="newBark = !newBark;$refs.container.classList.toggle('blured')"
             >
               new
             </a>
@@ -127,7 +127,10 @@
                 @click="setLike(session, bark)"
               ></ion-icon>
             </span>
-            <span like-count x-text="bark[0].likes != '0'? bark[0].likes: ''"></span>
+            <span
+              like-count
+              x-text="bark[0].likes != '0'? bark[0].likes: ''"
+            ></span>
             <span x-show="session != null && bark[0].author.id == session.id">
               <span sep-line></span>
               <span icon-con @click="deleteBark(session.token, bark[0].id)"
@@ -181,9 +184,7 @@
                       x-show="session != null && comment.author.id == session.id"
                     >
                       ·
-                      <span
-                        icon-con
-                        @click="deleteComment(session, comment.id)"
+                      <span icon-con @click="deleteComment(session, comment.id)"
                         ><ion-icon name="trash"></ion-icon
                       ></span>
                     </span>
@@ -194,20 +195,37 @@
                   class="content"
                   x-html="`<p>${comment.content.replace(/\\n/g, '<br>')}</p>`"
                 ></div>
-                <!-- <span icon-con like-button>
-                  <ion-icon
-                    name="heart"
-                    x-bind:class="bark[0].likeing ? 'has-text-danger': ''"
-                    @click="setLike(session, bark)"
-                  ></ion-icon>
-                </span>
-                <span like-count x-text="bark[0].likes"></span>
-                -->
               </div>
             </div>
           </div>
         </template>
       </div>
+    </div>
+
+    <div class="box" new x-cloak x-show="newBark">
+      <span inline class="field">
+        <strong>new bark</strong>
+        <button
+          class="delete"
+          @click="newBark=!newBark;$refs.container.classList.toggle('blured')"
+        ></button>
+      </span>
+      <form onsubmit="return false">
+        <div class="field">
+          <div class="control">
+            <textarea
+              class="input"
+              new-text
+              x-on:input="checkNewLen()"
+            ></textarea>
+            <span class="has-text-grey-dark" char-count>0/256</span>
+          </div>
+        </div>
+
+        <button class="button is-primary" submit @click="sendBark(session)">
+          bark
+        </button>
+      </form>
     </div>
 
     <footer class="footer">

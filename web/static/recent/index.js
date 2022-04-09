@@ -91,29 +91,3 @@ function setLike(session, id, barks) {
   if (!bark.likeing && ogLikes[bark.id][0]) likes -= 1;
   bark.likes = likes;
 }
-
-function checkNewLen() {
-  let value = document.querySelector("[new-text]").value;
-  let chars = value.length;
-
-  if (chars > 256) {
-    document.querySelector("[new-text]").value = value.substr(0, 256);
-    chars = 256;
-  }
-
-  document.querySelector("[char-count]").innerHTML = `${chars}/256${
-    chars >= 256 ? "!" : ""
-  }`;
-}
-
-window.addEventListener("load", () => {
-  const textBox = document.querySelector("[new-text]");
-  textBox.style.height = "80px";
-  textBox.style.overflowY = "hidden";
-
-  textBox.addEventListener("input", (e) => {
-    localStorage.setItem("text", e.target.value);
-    textBox.style.height = "auto";
-    textBox.style.height = textBox.scrollHeight + "px";
-  });
-});

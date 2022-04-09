@@ -93,3 +93,29 @@ function epochTime(time) {
 
   return `${Math.round(time)} years ago`;
 }
+
+function checkNewLen() {
+  let value = document.querySelector("[new-text]").value;
+  let chars = value.length;
+
+  if (chars > 256) {
+    document.querySelector("[new-text]").value = value.substr(0, 256);
+    chars = 256;
+  }
+
+  document.querySelector("[char-count]").innerHTML = `${chars}/256${
+    chars >= 256 ? "!" : ""
+  }`;
+}
+
+window.addEventListener("load", () => {
+  const textBox = document.querySelector("[new-text]");
+  textBox.style.height = "80px";
+  textBox.style.overflowY = "hidden";
+
+  textBox.addEventListener("input", (e) => {
+    localStorage.setItem("text", e.target.value);
+    textBox.style.height = "auto";
+    textBox.style.height = textBox.scrollHeight + "px";
+  });
+});
